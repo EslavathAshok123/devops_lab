@@ -6,7 +6,7 @@ pipeline {
         stage('Checkout from GitHub') {
             steps {
                 git branch: 'main',
-                    url: 'https://github.com/NaveenSingam/devops_lab.git'
+                    url: 'https://github.com/EslavathAshok123/devops_lab.git'
             }
         }
 
@@ -30,7 +30,7 @@ pipeline {
             steps {
                 sh '''
                 docker build -t node-docker-app:${BUILD_NUMBER} .
-                docker tag node-docker-app:${BUILD_NUMBER} b211626/node-docker-app:${BUILD_NUMBER}
+                docker tag node-docker-app:${BUILD_NUMBER} ashok918/node-docker-app:${BUILD_NUMBER}
                 '''
             }
         }
@@ -38,7 +38,7 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 sh '''
-                docker push b211626/node-docker-app:${BUILD_NUMBER}
+                docker push ashok918/node-docker-app:${BUILD_NUMBER}
                 '''
             }
         }
@@ -55,7 +55,7 @@ pipeline {
         stage('Deployment of nodeapp') {
             steps {
                 sh '''
-                minikube image load b211626/node-docker-app:${BUILD_NUMBER}
+                minikube image load ashok918/node-docker-app:${BUILD_NUMBER}
                 kubectl apply -f k8/k8deployment.yml --validate=false
                 '''
             }
