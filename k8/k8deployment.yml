@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: my-container
-        image: ashok918/node-docker-app:IMAGE_TAG  # Will be replaced dynamically in Jenkins
+        image: ashok918/node-docker-app:IMAGE_TAG
         ports:
         - containerPort: 8000
         imagePullPolicy: IfNotPresent
