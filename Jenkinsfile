@@ -74,6 +74,7 @@ pipeline {
                 sh '''
                 kubectl get pods
                 kubectl get services
+                echo "done"
                 '''
             }
         }
