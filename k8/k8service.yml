@@ -9,4 +9,4 @@ spec:
   ports:
     - port: 8007
       targetPort: 8000
-      nodePort: 30007   # fixed port for easy access
+      nodePort: 30007
