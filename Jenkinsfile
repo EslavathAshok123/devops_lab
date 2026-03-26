@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    environment {
+        IMAGE_NAME = "ashok918/node-docker-app"
+    }
+
     stages {
 
         stage('Checkout from GitHub') {
@@ -29,8 +33,8 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 sh '''
-                docker build -t node-docker-app:${BUILD_NUMBER} .
-                docker tag node-docker-app:${BUILD_NUMBER} ashok918/node-docker-app:${BUILD_NUMBER}
+                docker build -t ${IMAGE_NAME}:${BUILD_NUMBER} .
+                docker tag ${IMAGE_NAME}:${BUILD_NUMBER} ${IMAGE_NAME}:${BUILD_NUMBER}
                 '''
             }
         }
@@ -38,7 +42,7 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 sh '''
-                docker push ashok918/node-docker-app:${BUILD_NUMBER}
+                docker push ${IMAGE_NAME}:${BUILD_NUMBER}
                 '''
             }
         }
@@ -55,17 +59,18 @@ pipeline {
         stage('Deployment of nodeapp') {
             steps {
                 sh '''
-                minikube image load ashok918/node-docker-app:${BUILD_NUMBER}
-                kubectl apply -f k8/k8deployment.yml --validate=false
+                # Load image into minikube
+                minikube image load ${IMAGE_NAME}:${BUILD_NUMBER}
+
+                # Replace IMAGE_TAG with current BUILD_NUMBER and apply
+                sed "s/IMAGE_TAG/${BUILD_NUMBER}/g" k8/k8deployment.yml | kubectl apply -f - --validate=false
                 '''
             }
         }
 
         stage('Expose Service') {
             steps {
-                sh '''
-                kubectl apply -f k8/k8service.yml --validate=false
-                '''
+                sh 'kubectl apply -f k8/k8service.yml --validate=false'
             }
         }
 
@@ -73,11 +78,10 @@ pipeline {
             steps {
                 sh '''
                 kubectl get pods
-                kubectl get services
-                echo "done"
+                kubectl get svc
+                echo "Deployment done!"
                 '''
             }
         }
-
     }
 }
