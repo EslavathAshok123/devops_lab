@@ -6,7 +6,7 @@ spec:
     ports:
     - port: 8007
       targetPort: 8000
-      nodePort: 32000
+      #nodePort: 32000
     selector:
         app: my-deploy
     type: NodePort
