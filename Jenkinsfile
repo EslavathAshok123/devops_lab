@@ -41,9 +41,7 @@ pipeline {
 
         stage('Push Docker Image') {
             steps {
-                sh '''
-                docker push ${IMAGE_NAME}:${BUILD_NUMBER}
-                '''
+                sh 'docker push ${IMAGE_NAME}:${BUILD_NUMBER}'
             }
         }
 
@@ -62,7 +60,10 @@ pipeline {
                 # Load image into minikube
                 minikube image load ${IMAGE_NAME}:${BUILD_NUMBER}
 
-                # Replace IMAGE_TAG with current BUILD_NUMBER and apply
+                # Delete old deployment (if exists)
+                kubectl delete deployment my-deployment --ignore-not-found
+
+                # Replace IMAGE_TAG and apply
                 sed "s/IMAGE_TAG/${BUILD_NUMBER}/g" k8/k8deployment.yml | kubectl apply -f - --validate=false
                 '''
             }
@@ -70,7 +71,13 @@ pipeline {
 
         stage('Expose Service') {
             steps {
-                sh 'kubectl apply -f k8/k8service.yml --validate=false'
+                sh '''
+                # Delete old service (if exists)
+                kubectl delete service my-service --ignore-not-found
+
+                # Apply service
+                kubectl apply -f k8/k8service.yml --validate=false
+                '''
             }
         }
 
