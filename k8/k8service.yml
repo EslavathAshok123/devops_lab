@@ -3,10 +3,10 @@ kind: Service
 metadata:
   name: my-service
 spec:
-  type: NodePort
   selector:
     app: my-deploy
+  type: NodePort
   ports:
-    - port: 8007           # exposed port
-      targetPort: 8000     # container port
-      # nodePort: auto-assigned by Kubernetes
+    - port: 8007
+      targetPort: 8000
+      nodePort: 30007   # fixed port for easy access
